@@ -1,0 +1,31 @@
+.header {
+  color: gray;
+  background-color: transparent;
+  font-weight: bold;
+  text-align: center;
+  height: 5%;
+  border: 1px solid black;
+}
+
+.my-board {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.cards-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background: white;
+  align-items: center;
+  padding: 1%;
+  border: 5px solid lightgray;
+}
+
+.head-card {
+  background-color: lightgray;
+  border-radius: 35px;
+  border: 1px solid transparent;
+  padding: 2%;
+}
