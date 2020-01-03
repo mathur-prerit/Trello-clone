@@ -1,28 +1,18 @@
+API_KEY = "d74a95e66dd36faf1b09aade6ca22213";
 
+TOKEN = "69d3ab669b6271d81044daf08f934eabb54794deccf2d6a0cf6e9b255ea5301b";
+
+const boardID = "5e09a649a64249754ec2c677";
 
 let url;
 
-const allbody = document.getElementById("all-body");
-const allCards = document.createElement("div");
-allCards.className = "my-board";
-allbody.appendChild(allCards);
+const allCards = document.getElementById("my-board");
+const checklist = document.getElementById("popup");
 
-function update() {
-  const allCards = document.getElementById("my-board");
-  if (allCards !== null) {
-    // while (allCards.hasChildNodes()) {
-    //   allCards.removeChild(allCards.firstChild);
-    // }
-    console.log("here 28");
-    masterboard();
-  } else {
-    masterboard();
-  }
-}
+masterboard();
 
 update();
 
-// masterboard();
 // let headindex=0;
 // let index=0;
 let parent = "";
@@ -42,18 +32,14 @@ function masterboard() {
       // console.log(data)
       document.body.style.backgroundImage = `url(${data.prefs.backgroundImage})`;
       document.body.style.backgroundSize = "cover";
-    })
-    .then(() => getboardcards())
-    .catch(error => {
-      console.log(error);
     });
+  // .then(() => getboardcards())
+  // .catch(error => {
+  //   console.log(error);
+  // });
 }
 
-function getboardcards() {
-  const allCards = document.createElement("div");
-  allCards.className = "my-board";
-  allbody.appendChild(allCards);
-  // console.log('here')
+function update() {
   url = `https://api.trello.com/1/boards/${boardID}/lists?cards=all&key=${API_KEY}&token=${TOKEN}`;
 
   return fetch(url, {
@@ -65,23 +51,29 @@ function getboardcards() {
       }
     })
     .then(data => {
-      // console.log(data)
-      for (let i = 0; i < data.length; i++) {
-        // console.log(data[i])
-        // localData.push({id:data[i].id,text:data[i].name,position:i,items:[]})
-        headCards(data[i]);
-      }
-      const addHeadCardButton = document.createElement("button");
-      addHeadCardButton.id = "items-list";
-      // addHeadCardButton.style.
-      addHeadCardButton.appendChild(document.createTextNode("+ Add New List"));
-      allCards.appendChild(addHeadCardButton);
-      addHeadCardButton.addEventListener("click", addListForm);
+      getboardcards(data);
     });
+}
+
+function getboardcards(returnedData) {
+  while (allCards.hasChildNodes()) {
+    allCards.removeChild(allCards.firstChild);
+  }
+
+  for (let data of returnedData) {
+    //   console.log(data)
+    headCards(data);
+  }
+  const addHeadCardButton = document.createElement("button");
+  addHeadCardButton.id = "items-list";
+  addHeadCardButton.appendChild(document.createTextNode("+ Add New List"));
+  allCards.appendChild(addHeadCardButton);
+  addHeadCardButton.addEventListener("click", addListForm);
 }
 
 function headCards(items) {
   // console.log(items);
+  const allCards = document.getElementById("my-board");
   const addHeadCardItem = document.createElement("div");
   addHeadCardItem.className = "head-card";
   addHeadCardItem.appendChild(document.createTextNode(items.name));
@@ -120,10 +112,6 @@ function headCards(items) {
   addCardButton.addEventListener("click", addForm);
   addHeadCardItem.appendChild(addCardButton);
   allCards.appendChild(addHeadCardItem);
-  // addCardButton.style.setProperty('text-align','center')
-  // addCardButton.style.textAlign='center';
-  // addCardButton.style.padding='1%';
-  // headindex=headindex+1
 }
 
 // console.log(localData)
@@ -251,12 +239,10 @@ function addList(obj) {
 
 function popup() {
   // console.log(event)
-  parent = event.target.parentNode.id;
   const checklist = document.getElementById("popup");
-  const closebutton = document.createElement('button')
-  closebutton.innerText="x"
-  closebutton.className='close'
-  closebutton.addEventListener("click", close);
+  // console.log(checklist)
+  // const checklistItems = document.getElementById("popup-content");
+  parent = event.target.parentNode.id;
   checklist.style.display = "block";
   let CID = event.target.parentNode.id;
   // console.log(CID);
@@ -271,72 +257,85 @@ function popup() {
       }
     })
     .then(data => {
-      const checklistItems = document.getElementById("popup-content");
-      checklistItems.setAttribute("id", data[0].id);
-      for (let i = 0; i < data[0].checkItems.length; i++) {
-        // console.log(data[0].id);
-        let status = data[0].checkItems[i].state;
-        let checklistData = data[0].checkItems[i].name;
-
-        const addListItem = document.createElement("div");
-        const checkBox = document.createElement("input");
-        const text = document.createElement("div");
-        const editButton = document.createElement("button");
-        const delButton = document.createElement("button");
-
-        addListItem.className = "items-checklist";
-        addListItem.setAttribute("id", data[0].checkItems[i].id);
-        // addListItem.draggable = true;
-        // addListItem.setAttribute("position",index++)
-        checkBox.className = "item-checkbox";
-        checkBox.type = "checkbox";
-        if (status === "incompelete") {
-          checkBox.checked = 0;
-        } else if (status === "complete") {
-          checkBox.checked = 1;
-        }
-
-        text.appendChild(document.createTextNode(checklistData));
-        // checkBox.addEventListener("click", strikeItem);
-        editButton.className = "edit-card";
-        editButton.innerText = "\u270D";
-        delButton.className = "delete-item";
-        delButton.innerText = "\u2716";
-        delButton.addEventListener("click", delItem);
-        editButton.addEventListener("click", editItemForm);
-        if (status === "complete") {
-          text.style.textDecoration = "line-through";
-        } else if (status === "incomplete") {
-          text.style.textDecoration = "none";
-        }
-
-        addListItem.appendChild(checkBox);
-        addListItem.appendChild(text);
-        addListItem.appendChild(editButton);
-        addListItem.appendChild(delButton);
-        checklistItems.append(closebutton)
-        checklistItems.appendChild(addListItem);
-      }
-      const addChecklistItem = document.createElement("button");
-      addChecklistItem.className = "items-checklist";
-      addChecklistItem.innerText = "+ Add new checklist item";
-      checklistItems.appendChild(addChecklistItem);
-      addChecklistItem.addEventListener("click", addItemForm);
-
+      refreshCardDOM(data);
     });
 }
 
-function close(){
-  const checklist = document.getElementById("popup");
+function refreshCardDOM(data) {
+  const tabCheckBoard = document.getElementById("popup-content");
+  while (tabCheckBoard.hasChildNodes()) {
+    tabCheckBoard.removeChild(tabCheckBoard.firstChild);
+  }
+  const checklistItems = document.createElement("div");
+  // console.log(checklistItems);
+  checklistItems.setAttribute("id", data[0].id);
+  const closebutton = document.createElement("button");
+  closebutton.innerText = "x";
+  closebutton.className = "close";
+  closebutton.addEventListener("click", close);
+
+  for (let i = 0; i < data[0].checkItems.length; i++) {
+    let status = data[0].checkItems[i].state;
+    let checklistData = data[0].checkItems[i].name;
+    // console.log(data[0].checkItems[i].id);
+
+    const addListItem = document.createElement("div");
+    const checkBox = document.createElement("input");
+    const text = document.createElement("div");
+    const editButton = document.createElement("button");
+    const delButton = document.createElement("button");
+
+    addListItem.className = "items-checklist";
+    addListItem.setAttribute("id", data[0].checkItems[i].id);
+    checkBox.className = "item-checkbox";
+    checkBox.type = "checkbox";
+    if (status === "incompelete") {
+      checkBox.checked = 0;
+    } else if (status === "complete") {
+      checkBox.checked = 1;
+    }
+
+    text.appendChild(document.createTextNode(checklistData));
+    editButton.className = "edit-card";
+    editButton.innerText = "\u270D";
+    delButton.className = "delete-item";
+    delButton.innerText = "\u2716";
+    delButton.addEventListener("click", delItem);
+    editButton.addEventListener("click", editItemForm);
+
+    if (status === "complete") {
+      text.style.textDecoration = "line-through";
+    } else if (status === "incomplete") {
+      text.style.textDecoration = "none";
+    }
+
+    addListItem.appendChild(checkBox);
+    addListItem.appendChild(text);
+    addListItem.appendChild(editButton);
+    addListItem.appendChild(delButton);
+    checklistItems.appendChild(addListItem);
+  }
+
+  checklistItems.appendChild(closebutton);
+  const addChecklistItem = document.createElement("button");
+  addChecklistItem.className = "items-checklist";
+  addChecklistItem.innerText = "+ Add new checklist item";
+  checklistItems.appendChild(addChecklistItem);
+  tabCheckBoard.appendChild(checklistItems);
+  addChecklistItem.addEventListener("click", addItemForm);
+}
+
+function close() {
+  // console.log(checklist)
   checklist.style.display = "none";
 }
 
 window.onclick = function(event) {
-  const checklist = document.getElementById("popup");
+  // const checklist = document.getElementById("popup");
   if (event.target == checklist) {
     checklist.style.display = "none";
   }
-}
+};
 
 function delItem(obj) {
   // console.log(obj.target.parentNode.parentNode.id)
@@ -352,6 +351,7 @@ function delItem(obj) {
       return res.json();
     }
   });
+  //   .then(() => getboardcards());
   // .then(() => popup());
 }
 
@@ -388,7 +388,7 @@ function editItem(obj) {
       return res.json();
     }
   });
-  // .then(() => getboardcards());
+  //   .then(() => getboardcards());
 }
 
 function addItemForm(obj) {
@@ -416,6 +416,7 @@ function addItem(obj) {
       return res.json();
     }
   });
+  //   .then(() => getboardcards());
 }
 
 // function strikeItem(obj) {
