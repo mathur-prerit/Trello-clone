@@ -1,4 +1,6 @@
 
+let dataArray = [];
+
 let url;
 
 const allCards = document.getElementById("my-board");
@@ -95,7 +97,7 @@ function headCards(items) {
     deleteButton.className = "delete-card";
     deleteButton.innerText = "\u2716";
     // console.log(items.cards[i])
-    text.addEventListener("click", popup);
+    text.addEventListener("click", popopEvent);
     editButton.addEventListener("click", putForm);
     deleteButton.addEventListener("click", deleteCard);
 
@@ -244,51 +246,40 @@ function addList(obj) {
     .then(() => update());
 }
 
-function popup() {
+function popopEvent(obj){
+  parent = obj.target.parentNode.id;
+  popup();
+}
+
+async function popup() {
   // console.log(event)
   const checklist = document.getElementById("popup");
   // console.log(checklist)
   // const checklistItems = document.getElementById("popup-content");
-  const dataArray = [];
-  parent = event.target.parentNode.id;
+  // parent = event.target.parentNode.id;
+  // console.log(event.target.parentNode.id)
   checklist.style.display = "block";
-  let CID = event.target.parentNode.id;
+  let CID = parent;
   // console.log(CID);
-  url = [
-    `https://api.trello.com/1/cards/${CID}?key=${API_KEY}&token=${TOKEN}`,
-    `https://api.trello.com/1/cards/${CID}/checklists?checkItems=all&checkItem_fields=all&filter=all&fields=all&key=${API_KEY}&token=${TOKEN}`
-  ];
 
-  return Promise.all(
-    url.map(url =>
-      fetch(url, {
-        method: "GET"
-      })
-        .then(res => {
-          if (res.ok) {
-            return res.json();
-          }
-        })
-        .then(data => {
-          dataArray.push(data);
-        })
-    )
-  ).then(() => {
-    refreshCardDOM(dataArray);
-  });
+  const cardUrl = `https://api.trello.com/1/cards/${CID}?key=${API_KEY}&token=${TOKEN}`;
+    const checkListUrl = `https://api.trello.com/1/cards/${CID}/checklists?checkItems=all&checkItem_fields=all&filter=all&fields=all&key=${API_KEY}&token=${TOKEN}`;
+    let cardData = await fetch(cardUrl).then(res => res.json()).then(data => data);
+    let checkListData = await fetch(checkListUrl).then(res => res.json()).then(data => data);
+
+    refreshCardDOM(cardData,checkListData)
 }
 
-function refreshCardDOM(data) {
-  const dataDes = data[0];
-  const dataChecklist = data[1];
-
-  console.log(dataDes);
-  // console.log('dsfghj',dataChecklist)
+function refreshCardDOM(cardData,checkListData) {
+  const dataDes = cardData;
+  const dataChecklist = checkListData;
 
   const tabCheckBoard = document.getElementById("popup-content");
+
   while (tabCheckBoard.hasChildNodes()) {
     tabCheckBoard.removeChild(tabCheckBoard.firstChild);
   }
+
   const cardHeader = document.createElement("div");
   cardHeader.className = "card-header";
   cardHeader.appendChild(document.createTextNode(dataDes.name));
@@ -310,6 +301,7 @@ function refreshCardDOM(data) {
   desCard.appendChild(desCardContent);
   tabCheckBoard.appendChild(desCard);
 
+  // console.log(dataChecklist)
   for (dataCheck of dataChecklist) {
     const checklistItems = document.createElement("div");
     checklistItems.innerText = dataCheck.name;
@@ -405,8 +397,8 @@ function delItem(obj) {
     if (res.ok) {
       return res.json();
     }
-  });
-  //   .then(() => getboardcards());
+  })
+    .then(() => popup());
   // .then(() => popup());
 }
 
@@ -445,7 +437,8 @@ function editItem(obj) {
     if (res.ok) {
       return res.json();
     }
-  });
+  })
+  .then(() => popup());
   //   .then(() => getboardcards());
 }
 
@@ -476,7 +469,8 @@ function addItem(obj) {
     if (res.ok) {
       return res.json();
     }
-  });
+  })
+  .then(() => popup());
   //   .then(() => getboardcards());
 }
 
@@ -503,7 +497,8 @@ function strikeItem(obj) {
     if (res.ok) {
       return res.json();
     }
-  });
+  })
+  .then(() => popup());
 }
 
 function addNewChecklistForm(obj) {
@@ -526,15 +521,16 @@ function addNewChecklist(obj) {
   const CID = parent;
   const CINAME = document.getElementById("add-checklist").value;
   // console.log(CINAME)
-  console.log(CID)
-  url = `https://api.trello.com/1/checklists?idCard=${CID}&name=${CINAME}&key=${API_KEY}&token=${TOKEN}`
+  console.log(CID);
+  url = `https://api.trello.com/1/checklists?idCard=${CID}&name=${CINAME}&key=${API_KEY}&token=${TOKEN}`;
   return fetch(url, {
     method: "POST"
   }).then(res => {
     if (res.ok) {
       return res.json();
     }
-  });
+  })
+  .then(() => popup());
 }
 
 function deleteTheChecklist(obj) {
@@ -546,5 +542,6 @@ function deleteTheChecklist(obj) {
     if (res.ok) {
       return res.json();
     }
-  });
+  })
+  .then(() => popup());
 }

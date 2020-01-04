@@ -52,7 +52,7 @@
   background-color: #fefefe;
   color:black;
   margin: auto;
-  padding: 20px;
+  padding: 4%;
   border: 1px solid #888;
   width: 80%;
 }
@@ -82,3 +82,11 @@
   font-size: 18px;
   font-weight: bold;
 }
+
+.card-header{
+  text-align: center;
+font-size: 24px;
+font-weight: bold;
+}
+
+
