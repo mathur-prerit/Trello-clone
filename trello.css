@@ -75,3 +75,10 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.head-card-text{
+  color:black;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+}
