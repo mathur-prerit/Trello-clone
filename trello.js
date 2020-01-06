@@ -1,5 +1,13 @@
 
-let dataArray = [];
+
+// let dataArray = [];
+
+import {API_KEYa,TOKENa,boardIDa} from './config.js'
+
+const API_KEY=API_KEYa;
+const TOKEN=TOKENa;
+const boardID=boardIDa;
+
 
 let url;
 
@@ -97,7 +105,7 @@ function headCards(items) {
     deleteButton.className = "delete-card";
     deleteButton.innerText = "\u2716";
     // console.log(items.cards[i])
-    text.addEventListener("click", popopEvent);
+    text.addEventListener("click", popupEvent);
     editButton.addEventListener("click", putForm);
     deleteButton.addEventListener("click", deleteCard);
 
@@ -246,7 +254,7 @@ function addList(obj) {
     .then(() => update());
 }
 
-function popopEvent(obj){
+function popupEvent(obj){
   parent = obj.target.parentNode.id;
   popup();
 }
@@ -302,9 +310,10 @@ function refreshCardDOM(cardData,checkListData) {
   tabCheckBoard.appendChild(desCard);
 
   // console.log(dataChecklist)
-  for (dataCheck of dataChecklist) {
+  for (let dataCheck of dataChecklist) {
     const checklistItems = document.createElement("div");
     checklistItems.innerText = dataCheck.name;
+    checklistItems.className='checklist-content'
     checklistItems.setAttribute("id", dataCheck.id);
 
     for (let j = 0; j < dataCheck.checkItems.length; j++) {
